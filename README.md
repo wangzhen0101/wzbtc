@@ -1,2 +1,2 @@
 # wzbtc
-This is a test project for block chain
+This is a project base on Block Chain Technology
