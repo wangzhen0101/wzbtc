@@ -1,4 +1,4 @@
-package peer
+package database
 
 import (
 	"github.com/wangzhen0101/wzbtc/bclog"
@@ -25,4 +25,11 @@ func DisableLog() {
 // using btclog.
 func UseLogger(logger bclog.Logger) {
 	log = logger
+
+	// Update the logger for the registered drivers.
+	for _, drv := range drivers {
+		if drv.UseLogger != nil {
+			drv.UseLogger(logger)
+		}
+	}
 }

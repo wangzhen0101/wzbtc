@@ -1,4 +1,4 @@
-package peer
+package cpuminer
 
 import (
 	"github.com/wangzhen0101/wzbtc/bclog"

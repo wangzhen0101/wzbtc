@@ -1,4 +1,4 @@
-package peer
+package txscript
 
 import (
 	"github.com/wangzhen0101/wzbtc/bclog"

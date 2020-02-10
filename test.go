@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/wangzhen0101/wzbtc/peer"
 	"os"
 	"path/filepath"
 )
@@ -12,11 +11,10 @@ func main() {
 	initLogRotator(logPath)
 	setLogLevels("trace")
 
-	netLog.Tracef("test netlog, %d", 11)
-	netLog.Debugf("test netlog, %d", 11)
-	netLog.Infof("test netlog, %d", 11)
-	netLog.Warnf("test netlog, %d", 11)
-	netLog.Errorf("test netlog, %d", 11)
-	netLog.Fatalf("test netlog, %d", 11)
-	peer.TestNetLog("call by main")
+	btcdLog.Tracef("test netlog, %d", 11)
+	btcdLog.Debugf("test netlog, %d", 11)
+	btcdLog.Infof("test netlog, %d", 11)
+	btcdLog.Warnf("test netlog, %d", 11)
+	btcdLog.Errorf("test netlog, %d", 11)
+	btcdLog.Fatalf("test netlog, %d", 11)
 }

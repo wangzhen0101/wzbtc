@@ -79,7 +79,7 @@ func recycleBuffer(b *[]byte) {
 	bufferPool.Put(b)
 }
 
-func LevelFromStrings(s string) (l Level, ok bool) {
+func LevelFromString(s string) (l Level, ok bool) {
 	switch strings.ToLower(s) {
 	case "trace", "trc":
 		return LevelTrace, true
