@@ -1,6 +1,6 @@
 package blockchain
 
-import "github.com/btcsuite/btcd/wire"
+import "github.com/wangzhen0101/wzbtc/wire"
 
 const (
 	// MaxBlockWeight defines the maximum block weight, where "block

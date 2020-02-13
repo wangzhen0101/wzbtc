@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/btcsuite/btcutil"
+	"github.com/wangzhen0101/btcutil"
 	"github.com/wangzhen0101/wzbtc/chaincfg/chainhash"
 )
 

@@ -1,6 +1,6 @@
 package mempool
 
-import "github.com/btcsuite/btcutil"
+import "github.com/wangzhen0101/btcutil"
 
 const (
 	// maxStandardP2SHSigOps is the maximum number of signature operations
