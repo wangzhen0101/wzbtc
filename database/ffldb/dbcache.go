@@ -11,7 +11,6 @@ import (
 	"time"
 )
 
-
 const (
 	// defaultCacheSize is the default size for the database cache.
 	defaultCacheSize = 100 * 1024 * 1024 // 100 MB
@@ -64,8 +63,6 @@ func (iter *ldbCacheIter) SetReleaser(releaser util.Releaser) {
 // This is part of the leveldb iterator.Iterator interface implementation.
 func (iter *ldbCacheIter) Release() {
 }
-
-
 
 func newLdbCacheIter(snap *dbCacheSnapshot, slice *util.Range) *ldbCacheIter {
 	iter := snap.pendingKeys.Iterator(slice.Start, slice.Limit)
@@ -326,14 +323,13 @@ func (snap *dbCacheSnapshot) Release() {
 	snap.pendingRemove = nil
 }
 
-func (snap *dbCacheSnapshot) NewInterator(slice *util.Range) *dbCacheIterator {
+func (snap *dbCacheSnapshot) NewIterator(slice *util.Range) *dbCacheIterator {
 	return &dbCacheIterator{
 		cacheSnapshot: snap,
 		dbIter:        snap.dbSnapshot.NewIterator(slice, nil),
 		cacheIter:     newLdbCacheIter(snap, slice),
 	}
 }
-
 
 type dbCache struct {
 	// ldb is the underlying leveldb DB for metadata.
@@ -372,7 +368,6 @@ type dbCache struct {
 	cachedKeys   *treap.Immutable
 	cachedRemove *treap.Immutable
 }
-
 
 func (c *dbCache) Snapshot() (*dbCacheSnapshot, error) {
 	dbSnapshot, err := c.ldb.GetSnapshot()
@@ -424,7 +419,6 @@ type TreapForEacher interface {
 	ForEach(func(k, v []byte) bool)
 }
 
-
 func (c *dbCache) commitTreaps(pendingKeys, pendingRemove TreapForEacher) error {
 	return c.updateDB(func(ldbTx *leveldb.Transaction) error {
 		var innerErr error
@@ -441,7 +435,7 @@ func (c *dbCache) commitTreaps(pendingKeys, pendingRemove TreapForEacher) error 
 			return innerErr
 		}
 
-		pendingRemove.ForEach(func(k,v []byte) bool {
+		pendingRemove.ForEach(func(k, v []byte) bool {
 			if dbErr := ldbTx.Delete(k, nil); dbErr != nil {
 				str := fmt.Sprintf("failed to delete key %q from ldb transaction", k)
 				innerErr = convertErr(str, dbErr)
@@ -464,7 +458,7 @@ func (c *dbCache) flush() error {
 
 	c.cacheLock.RLock()
 	cachedKeys := c.cachedKeys
-	cachedRemove  := c.cachedRemove
+	cachedRemove := c.cachedRemove
 	c.cacheLock.RUnlock()
 
 	if cachedKeys.Len() == 0 && cachedRemove.Len() == 0 {
@@ -478,13 +472,12 @@ func (c *dbCache) flush() error {
 
 	// 清空所有的缓存
 	c.cacheLock.Lock()
-	c.cachedKeys  = treap.NewImmutable()
+	c.cachedKeys = treap.NewImmutable()
 	c.cachedRemove = treap.NewImmutable()
 	c.cacheLock.Unlock()
 
 	return nil
 }
-
 
 //判断缓存中的内容是否需要flushed
 func (c *dbCache) needsFlush(tx *transaction) bool {
@@ -518,7 +511,7 @@ func (c *dbCache) commitTx(tx *transaction) error {
 	}
 
 	c.cacheLock.RLock()
-	newCachedKeys  := c.cachedKeys
+	newCachedKeys := c.cachedKeys
 	newCachedRemove := c.cachedRemove
 	c.cacheLock.RUnlock()
 
@@ -537,7 +530,7 @@ func (c *dbCache) commitTx(tx *transaction) error {
 	tx.pendingRemove = nil
 
 	c.cacheLock.Lock()
-	c.cachedKeys  = newCachedKeys
+	c.cachedKeys = newCachedKeys
 	c.cachedRemove = newCachedRemove
 	c.cacheLock.Unlock()
 
@@ -567,7 +560,6 @@ func (c *dbCache) Close() error {
 	return nil
 }
 
-
 // newDbCache returns a new database cache instance backed by the provided
 // leveldb instance.  The cache will be flushed to leveldb when the max size
 // exceeds the provided value or it has been longer than the provided interval
@@ -583,4 +575,3 @@ func newDbCache(ldb *leveldb.DB, store *blockStore, maxSize uint64, flushInterva
 		cachedRemove:  treap.NewImmutable(),
 	}
 }
-

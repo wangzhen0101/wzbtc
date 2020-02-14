@@ -51,7 +51,7 @@ func reconcileDB(pdb *db, create bool) (database.DB, error) {
 
 	//从数据库中获取当前写文件的位置
 	var curFileNum, curOffset uint32
-	err := pdb.View(func(tx database.TX) error {
+	err := pdb.View(func(tx database.Tx) error {
 		writeRow := tx.Metadata().Get(writeLocKeyName)
 		if writeRow == nil {
 			str := "write cursor does not exist"
@@ -69,7 +69,7 @@ func reconcileDB(pdb *db, create bool) (database.DB, error) {
 	wc := pdb.store.writeCursor
 
 	//数据库保存的位置大于文件实际的位置则表明文件已经遭到破坏则数据库启动失败，需要重新初始化数据
-	if  curFileNum > wc.curFileNum || (wc.curFileNum == curFileNum && wc.curOffset < curOffset) {
+	if curFileNum > wc.curFileNum || (wc.curFileNum == curFileNum && wc.curOffset < curOffset) {
 		str := fmt.Sprintf("metadata claims file %d, offset %d, but "+
 			"block data is at file %d, offset %d", curFileNum,
 			curOffset, wc.curFileNum, wc.curOffset)
