@@ -469,7 +469,7 @@ func loadConfig() (*config, []string, error) {
 	if !(preCfg.RegressionTest || preCfg.SimNet) || preCfg.ConfigFile !=
 		defaultConfigFile {
 
-		//bclog.Infof("load from file :%s, %s", preCfg.ConfigFile, defaultConfigFile)
+		//btcdLog.Infof("load from file :%s, %s", preCfg.ConfigFile, defaultConfigFile)
 
 		if _, err := os.Stat(preCfg.ConfigFile); os.IsNotExist(err) {
 			err := createDefaultConfigFile(preCfg.ConfigFile)
@@ -507,7 +507,7 @@ func loadConfig() (*config, []string, error) {
 
 	// Create the home directory if it doesn't already exist.
 	funcName := "loadConfig"
-	bclog.Tracef("defaultHomeDir is :%s", defaultHomeDir)
+	btcdLog.Tracef("defaultHomeDir is :%s", defaultHomeDir)
 	err = os.MkdirAll(defaultHomeDir, 0700)
 	if err != nil {
 		// Show a nicer error message if it's because a symlink is
@@ -726,7 +726,7 @@ func loadConfig() (*config, []string, error) {
 	}
 
 	if cfg.DisableRPC {
-		bclog.Infof("RPC service is disabled")
+		btcdLog.Infof("RPC service is disabled")
 	}
 
 	// Default RPC to listen on localhost only.
@@ -1079,7 +1079,7 @@ func loadConfig() (*config, []string, error) {
 	// done.  This prevents the warning on help messages and invalid
 	// options.  Note this should go directly before the return.
 	if configFileError != nil {
-		bclog.Warnf("%v", configFileError)
+		btcdLog.Warnf("%v", configFileError)
 	}
 
 	return &cfg, remainingArgs, nil
@@ -1181,99 +1181,99 @@ func btcdLookup(host string) ([]net.IP, error) {
 }
 
 func DumpCfg(cfg *config) {
-	bclog.Tracef("ShowVersion          :%t", cfg.ShowVersion)
-	bclog.Tracef("ConfigFile           :%s", cfg.ConfigFile)
-	bclog.Tracef("DataDir              :%s", cfg.DataDir)
-	bclog.Tracef("LogDir               :%s", cfg.LogDir)
+	btcdLog.Infof("ShowVersion          :%t", cfg.ShowVersion)
+	btcdLog.Infof("ConfigFile           :%s", cfg.ConfigFile)
+	btcdLog.Infof("DataDir              :%s", cfg.DataDir)
+	btcdLog.Infof("LogDir               :%s", cfg.LogDir)
 	for i := 0; i < len(cfg.AddPeers); i++ {
-		bclog.Tracef("AddPeers[%d]         :%s", i, cfg.AddPeers[i])
+		btcdLog.Infof("AddPeers[%d]         :%s", i, cfg.AddPeers[i])
 	}
 	for i := 0; i < len(cfg.ConnectPeers); i++ {
-		bclog.Tracef("ConnectPeers[%d]     :%s", i, cfg.ConnectPeers[i])
+		btcdLog.Infof("ConnectPeers[%d]     :%s", i, cfg.ConnectPeers[i])
 	}
-	bclog.Tracef("DisableListen        :%t", cfg.DisableListen)
+	btcdLog.Infof("DisableListen        :%t", cfg.DisableListen)
 	for i := 0; i < len(cfg.Listeners); i++ {
-		bclog.Tracef("Listeners[%d]        :%s", i, cfg.Listeners[i])
+		btcdLog.Infof("Listeners[%d]        :%s", i, cfg.Listeners[i])
 	}
-	bclog.Tracef("MaxPeers             :%d", cfg.MaxPeers)
-	bclog.Tracef("DisableBanning       :%t", cfg.DisableBanning)
-	bclog.Tracef("BanDuration          :%d", cfg.BanDuration)
-	bclog.Tracef("BanThreshold         :%d", cfg.BanThreshold)
+	btcdLog.Infof("MaxPeers             :%d", cfg.MaxPeers)
+	btcdLog.Infof("DisableBanning       :%t", cfg.DisableBanning)
+	btcdLog.Infof("BanDuration          :%d", cfg.BanDuration)
+	btcdLog.Infof("BanThreshold         :%d", cfg.BanThreshold)
 	for i := 0; i < len(cfg.AgentBlacklist); i++ {
-		bclog.Tracef("AgentBlacklist[%d]    :%s", i, cfg.AgentBlacklist[i])
+		btcdLog.Infof("AgentBlacklist[%d]    :%s", i, cfg.AgentBlacklist[i])
 	}
 	for i := 0; i < len(cfg.AgentWhitelist); i++ {
-		bclog.Tracef("AgentWhitelist[%d]    :%s", i, cfg.AgentWhitelist[i])
+		btcdLog.Infof("AgentWhitelist[%d]    :%s", i, cfg.AgentWhitelist[i])
 	}
 	for i := 0; i < len(cfg.Whitelists); i++ {
-		bclog.Tracef("Whitelists[%d]        :%s", i, cfg.Whitelists[i])
+		btcdLog.Infof("Whitelists[%d]        :%s", i, cfg.Whitelists[i])
 	}
-	bclog.Tracef("RPCUser              :%s", cfg.RPCUser)
-	bclog.Tracef("RPCPass              :%s", cfg.RPCPass)
-	bclog.Tracef("RPCLimitUser         :%s", cfg.RPCLimitUser)
-	bclog.Tracef("RPCLimitPass         :%s", cfg.RPCLimitPass)
+	btcdLog.Infof("RPCUser              :%s", cfg.RPCUser)
+	btcdLog.Infof("RPCPass              :%s", cfg.RPCPass)
+	btcdLog.Infof("RPCLimitUser         :%s", cfg.RPCLimitUser)
+	btcdLog.Infof("RPCLimitPass         :%s", cfg.RPCLimitPass)
 	for i := 0; i < len(cfg.RPCListeners); i++ {
-		bclog.Tracef("RPCListeners[%d]     :%s", i, cfg.RPCListeners[i])
+		btcdLog.Infof("RPCListeners[%d]     :%s", i, cfg.RPCListeners[i])
 	}
-	bclog.Tracef("RPCCert              :%s", cfg.RPCCert)
-	bclog.Tracef("RPCKey               :%s", cfg.RPCKey)
-	bclog.Tracef("RPCMaxClients        :%d", cfg.RPCMaxClients)
-	bclog.Tracef("RPCMaxWebsockets     :%d", cfg.RPCMaxWebsockets)
-	bclog.Tracef("RPCMaxConcurrentReqs :%d", cfg.RPCMaxConcurrentReqs)
-	bclog.Tracef("RPCQuirks            :%t", cfg.RPCQuirks)
-	bclog.Tracef("DisableRPC           :%t", cfg.DisableRPC)
-	bclog.Tracef("DisableTLS           :%t", cfg.DisableTLS)
-	bclog.Tracef("DisableDNSSeed       :%t", cfg.DisableDNSSeed)
+	btcdLog.Infof("RPCCert              :%s", cfg.RPCCert)
+	btcdLog.Infof("RPCKey               :%s", cfg.RPCKey)
+	btcdLog.Infof("RPCMaxClients        :%d", cfg.RPCMaxClients)
+	btcdLog.Infof("RPCMaxWebsockets     :%d", cfg.RPCMaxWebsockets)
+	btcdLog.Infof("RPCMaxConcurrentReqs :%d", cfg.RPCMaxConcurrentReqs)
+	btcdLog.Infof("RPCQuirks            :%t", cfg.RPCQuirks)
+	btcdLog.Infof("DisableRPC           :%t", cfg.DisableRPC)
+	btcdLog.Infof("DisableTLS           :%t", cfg.DisableTLS)
+	btcdLog.Infof("DisableDNSSeed       :%t", cfg.DisableDNSSeed)
 	for i := 0; i < len(cfg.ExternalIPs); i++ {
-		bclog.Tracef("ExternalIPs[%d]      :%s", i, cfg.ExternalIPs[i])
+		btcdLog.Infof("ExternalIPs[%d]      :%s", i, cfg.ExternalIPs[i])
 	}
-	bclog.Tracef("Proxy                :%s", cfg.Proxy)
-	bclog.Tracef("ProxyUser            :%s", cfg.ProxyUser)
-	bclog.Tracef("ProxyPass            :%s", cfg.ProxyPass)
-	bclog.Tracef("OnionProxy           :%s", cfg.OnionProxy)
-	bclog.Tracef("OnionProxyUser       :%s", cfg.OnionProxyUser)
-	bclog.Tracef("OnionProxyPass       :%s", cfg.OnionProxyPass)
-	bclog.Tracef("NoOnion              :%t", cfg.NoOnion)
-	bclog.Tracef("TorIsolation         :%t", cfg.TorIsolation)
-	bclog.Tracef("TestNet3             :%t", cfg.TestNet3)
-	bclog.Tracef("RegressionTest       :%t", cfg.RegressionTest)
-	bclog.Tracef("SimNet               :%t", cfg.SimNet)
+	btcdLog.Infof("Proxy                :%s", cfg.Proxy)
+	btcdLog.Infof("ProxyUser            :%s", cfg.ProxyUser)
+	btcdLog.Infof("ProxyPass            :%s", cfg.ProxyPass)
+	btcdLog.Infof("OnionProxy           :%s", cfg.OnionProxy)
+	btcdLog.Infof("OnionProxyUser       :%s", cfg.OnionProxyUser)
+	btcdLog.Infof("OnionProxyPass       :%s", cfg.OnionProxyPass)
+	btcdLog.Infof("NoOnion              :%t", cfg.NoOnion)
+	btcdLog.Infof("TorIsolation         :%t", cfg.TorIsolation)
+	btcdLog.Infof("TestNet3             :%t", cfg.TestNet3)
+	btcdLog.Infof("RegressionTest       :%t", cfg.RegressionTest)
+	btcdLog.Infof("SimNet               :%t", cfg.SimNet)
 	for i := 0; i < len(cfg.AddCheckpoints); i++ {
-		bclog.Tracef("AddCheckpoints[%d]   :%s", i, cfg.AddCheckpoints[i])
+		btcdLog.Infof("AddCheckpoints[%d]   :%s", i, cfg.AddCheckpoints[i])
 	}
-	bclog.Tracef("DisableCheckpoints   :%t", cfg.DisableCheckpoints)
-	bclog.Tracef("DbType               :%s", cfg.DbType)
-	bclog.Tracef("Profile              :%s", cfg.Profile)
-	bclog.Tracef("CPUProfile           :%s", cfg.CPUProfile)
-	bclog.Tracef("DebugLevel           :%s", cfg.DebugLevel)
-	bclog.Tracef("Upnp                 :%t", cfg.Upnp)
-	bclog.Tracef("MinRelayTxFee        :%f", cfg.MinRelayTxFee)
-	bclog.Tracef("FreeTxRelayLimit     :%f", cfg.FreeTxRelayLimit)
-	bclog.Tracef("NoRelayPriority      :%t", cfg.NoRelayPriority)
-	bclog.Tracef("TrickleInterval      :%d", cfg.TrickleInterval)
-	bclog.Tracef("MaxOrphanTxs         :%d", cfg.MaxOrphanTxs)
-	bclog.Tracef("Generate             :%t", cfg.Generate)
+	btcdLog.Infof("DisableCheckpoints   :%t", cfg.DisableCheckpoints)
+	btcdLog.Infof("DbType               :%s", cfg.DbType)
+	btcdLog.Infof("Profile              :%s", cfg.Profile)
+	btcdLog.Infof("CPUProfile           :%s", cfg.CPUProfile)
+	btcdLog.Infof("DebugLevel           :%s", cfg.DebugLevel)
+	btcdLog.Infof("Upnp                 :%t", cfg.Upnp)
+	btcdLog.Infof("MinRelayTxFee        :%f", cfg.MinRelayTxFee)
+	btcdLog.Infof("FreeTxRelayLimit     :%f", cfg.FreeTxRelayLimit)
+	btcdLog.Infof("NoRelayPriority      :%t", cfg.NoRelayPriority)
+	btcdLog.Infof("TrickleInterval      :%d", cfg.TrickleInterval)
+	btcdLog.Infof("MaxOrphanTxs         :%d", cfg.MaxOrphanTxs)
+	btcdLog.Infof("Generate             :%t", cfg.Generate)
 	for i := 0; i < len(cfg.MiningAddrs); i++ {
-		bclog.Tracef("MiningAddrs[%d]      :%s", i, cfg.MiningAddrs[i])
+		btcdLog.Infof("MiningAddrs[%d]      :%s", i, cfg.MiningAddrs[i])
 	}
-	bclog.Tracef("BlockMinSize         :%d", cfg.BlockMinSize)
-	bclog.Tracef("BlockMaxSize         :%d", cfg.BlockMaxSize)
-	bclog.Tracef("BlockMinWeight       :%d", cfg.BlockMinWeight)
-	bclog.Tracef("BlockMaxWeight       :%d", cfg.BlockMaxWeight)
-	bclog.Tracef("BlockPrioritySize    :%d", cfg.BlockPrioritySize)
+	btcdLog.Infof("BlockMinSize         :%d", cfg.BlockMinSize)
+	btcdLog.Infof("BlockMaxSize         :%d", cfg.BlockMaxSize)
+	btcdLog.Infof("BlockMinWeight       :%d", cfg.BlockMinWeight)
+	btcdLog.Infof("BlockMaxWeight       :%d", cfg.BlockMaxWeight)
+	btcdLog.Infof("BlockPrioritySize    :%d", cfg.BlockPrioritySize)
 	for i := 0; i < len(cfg.UserAgentComments); i++ {
-		bclog.Tracef("UserAgentComments[%d]:%s", i, cfg.UserAgentComments)
+		btcdLog.Infof("UserAgentComments[%d]:%s", i, cfg.UserAgentComments)
 	}
-	bclog.Tracef("NoPeerBloomFilters   :%t", cfg.NoPeerBloomFilters)
-	bclog.Tracef("NoCFilters           :%t", cfg.NoCFilters)
-	bclog.Tracef("DropCfIndex          :%t", cfg.DropCfIndex)
-	bclog.Tracef("SigCacheMaxSize      :%d", cfg.SigCacheMaxSize)
-	bclog.Tracef("BlocksOnly           :%t", cfg.BlocksOnly)
-	bclog.Tracef("TxIndex              :%t", cfg.TxIndex)
-	bclog.Tracef("DropTxIndex          :%t", cfg.DropTxIndex)
-	bclog.Tracef("AddrIndex            :%t", cfg.AddrIndex)
-	bclog.Tracef("DropAddrIndex        :%t", cfg.DropAddrIndex)
-	bclog.Tracef("RelayNonStd          :%t", cfg.RelayNonStd)
-	bclog.Tracef("RejectNonStd         :%t", cfg.RejectNonStd)
-	bclog.Tracef("RejectReplacement    :%t", cfg.RejectReplacement)
+	btcdLog.Infof("NoPeerBloomFilters   :%t", cfg.NoPeerBloomFilters)
+	btcdLog.Infof("NoCFilters           :%t", cfg.NoCFilters)
+	btcdLog.Infof("DropCfIndex          :%t", cfg.DropCfIndex)
+	btcdLog.Infof("SigCacheMaxSize      :%d", cfg.SigCacheMaxSize)
+	btcdLog.Infof("BlocksOnly           :%t", cfg.BlocksOnly)
+	btcdLog.Infof("TxIndex              :%t", cfg.TxIndex)
+	btcdLog.Infof("DropTxIndex          :%t", cfg.DropTxIndex)
+	btcdLog.Infof("AddrIndex            :%t", cfg.AddrIndex)
+	btcdLog.Infof("DropAddrIndex        :%t", cfg.DropAddrIndex)
+	btcdLog.Infof("RelayNonStd          :%t", cfg.RelayNonStd)
+	btcdLog.Infof("RejectNonStd         :%t", cfg.RejectNonStd)
+	btcdLog.Infof("RejectReplacement    :%t", cfg.RejectReplacement)
 }

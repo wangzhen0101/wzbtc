@@ -21,7 +21,7 @@ type Option struct {
 	IntMap         map[string]int `long:"intmap" description:"A map from string to int"`
 }
 
-func main() {
+func aamain() {
 	var opt Option
 	opt.Call = func(value string) {
 		fmt.Printf("in callback: \n", value)
