@@ -51,6 +51,8 @@ github.com/wangzhen0101/logrotate v1.0.0 h1:faL3L2rbN3HBcl+YZvpvuCA0HvDoAFQgZQxB
 github.com/wangzhen0101/logrotate v1.0.0/go.mod h1:hZjH+dJ+Pbh47o0tWTW7GIq+/hb0aiOBKWrjfBWtqro=
 github.com/wangzhen0101/logrotate v1.0.1 h1:r9hChZDmOyl73T8du652Z2H/n2cfqXYcYZhR55jIUDM=
 github.com/wangzhen0101/logrotate v1.0.1/go.mod h1:hZjH+dJ+Pbh47o0tWTW7GIq+/hb0aiOBKWrjfBWtqro=
+github.com/wangzhen0101/logrotate v1.0.2 h1:NvW2w/RKk05N9CHvEsgGPxi5uZo7WPb1u01C/GmZLgU=
+github.com/wangzhen0101/logrotate v1.0.2/go.mod h1:hZjH+dJ+Pbh47o0tWTW7GIq+/hb0aiOBKWrjfBWtqro=
 github.com/wangzhen0101/wzbtc v0.0.4/go.mod h1:v25ZXyFpfdi2OdQGofPML5ersJ1JOD6t/KupTGcm4bg=
 github.com/wangzhen0101/wzbtc v0.20.1-beta h1:Ik4hyJqN8Jfyv3S4AGBOmyouMsYE3EdYODkMbQjwPGw=
 github.com/wangzhen0101/wzbtc v0.20.1-beta/go.mod h1:wVuoA8VJLEcwgqHBwHmzLRazpKxTv13Px/pDuV7OomQ=
@@ -59,6 +61,8 @@ golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACk
 golang.org/x/crypto v0.0.0-20200115085410-6d4e4cb37c7d/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
 golang.org/x/crypto v0.0.0-20200210222208-86ce3cb69678 h1:wCWoJcFExDgyYx2m2hpHgwz8W3+FPdfldvIgzqDIhyg=
 golang.org/x/crypto v0.0.0-20200210222208-86ce3cb69678/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
+golang.org/x/crypto v0.0.0-20200214034016-1d94cc7ab1c6 h1:Sy5bstxEqwwbYs6n0/pBuxKENqOeZUgD45Gp3Q3pqLg=
+golang.org/x/crypto v0.0.0-20200214034016-1d94cc7ab1c6/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
 golang.org/x/net v0.0.0-20180719180050-a680a1efc54d/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
 golang.org/x/net v0.0.0-20180906233101-161cd47e91fd/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
 golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3 h1:0GoQqolDA55aaLxZyTzK/Y2ePZzZTUrRacwib7cNsYQ=
