@@ -1,20 +1,12 @@
 package main
 
 import (
-	"os"
-	"path/filepath"
+	"fmt"
 )
 
 func main() {
-	logPath, _ := os.Getwd()
-	logPath = filepath.Join(logPath, "wzbtc-log")
-	initLogRotator(logPath)
-	setLogLevels("trace")
-
-	btcdLog.Tracef("test netlog, %d", 11)
-	btcdLog.Debugf("test netlog, %d", 11)
-	btcdLog.Infof("test netlog, %d", 11)
-	btcdLog.Warnf("test netlog, %d", 11)
-	btcdLog.Errorf("test netlog, %d", 11)
-	btcdLog.Fatalf("test netlog, %d", 11)
+	str := "a305a1748d8be5bf755073cf4d515be25ce23434d6b1f915432ba0d5f82f3dfe"
+	a := []byte(str)
+	fmt.Printf("s:%s, len:%d\n", str, len(str))
+	fmt.Printf("a:%s, len:%d\n", a, len(a))
 }

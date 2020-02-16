@@ -33,6 +33,29 @@ func updateKey(idx uint32) error {
 		//}
 		log.Infof("set Key:%s value:%s", key, tx.Metadata().Get(key))
 
+		//iter := tx.Metadata().Cursor()
+		//for iter.Next() {
+		//	log.Infof("Metadata key:%s, values:%s", iter.Key(), iter.Value())
+		//}
+
+		//newBucket, err := tx.Metadata().CreateBucket([]byte(fmt.Sprintf("mybucket%03d", idx)))
+		//if err != nil {
+		//	log.Errorf("CreateBucket error:%s", err)
+		//}
+
+		newBucket := tx.Metadata().Bucket([]byte("mybucket"))
+		if newBucket == nil {
+			log.Errorf("CreateBucket error")
+		}
+
+		//
+		//key = []byte(fmt.Sprintf("wzkey%06d", idx))
+		//value = []byte(fmt.Sprintf("wzvalue%06d", idx))
+		//err = newBucket.Put(key, value)
+		//if err != nil {
+		//	log.Errorf("put key err:%s", err)
+		//}
+
 		//// Create a new nested bucket under the metadata bucket.
 		//nestedBucketKey := []byte("mybucket")
 		//nestedBucket, err := tx.Metadata().CreateBucket(nestedBucketKey)

@@ -18,11 +18,19 @@ func updateBlock(idx int32) error {
 	block := btcutil.NewBlock(&Block100000)
 	block.MsgBlock().Header.Nonce = uint32(idx)
 	block.SetHeight(idx)
+	printBlock(block)
 	blockBytes, err := block.Bytes()
 	if err != nil {
 		log.Errorf("block to bytes fail:%s", err)
 		return err
 	}
+
+	block2, err2 := btcutil.NewBlockFromBytes(blockBytes)
+	if err2 != nil {
+		log.Errorf("NewBlockFromBytes fail:%s", err2)
+		return nil
+	}
+	printBlock(block2)
 
 	err = db.Update(func(tx database.Tx) error {
 

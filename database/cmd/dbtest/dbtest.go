@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/btcsuite/goleveldb/leveldb"
 	"github.com/jessevdk/go-flags"
 	"github.com/wangzhen0101/wzbtc/bclog"
 	"github.com/wangzhen0101/wzbtc/database"
@@ -20,6 +21,7 @@ var (
 	log       bclog.Logger
 	cfg       = &cmdCfg{}
 	db        database.DB
+	ldb       *leveldb.DB
 	interrupt <-chan struct{}
 )
 

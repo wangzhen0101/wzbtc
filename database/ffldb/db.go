@@ -350,6 +350,8 @@ func openDB(dbPath string, network wire.BitcoinNet, create bool) (database.DB, e
 		Strict:       opt.DefaultStrict,
 	}
 
+	log.Infof("openDB path:%s", metadataDbPath)
+
 	ldb, err := leveldb.OpenFile(metadataDbPath, &opts)
 	if err != nil {
 		return nil, convertErr(err.Error(), err)
