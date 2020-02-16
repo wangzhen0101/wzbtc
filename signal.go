@@ -17,21 +17,21 @@ func interruptListener() <-chan struct{} {
 
 		select {
 		case sig := <-interruptChannel:
-			btcdLog.Infof("Received signal (%s).  Shutting down...",
+			bclog.Infof("Received signal (%s).  Shutting down...",
 				sig)
 		case <-shutdownRequestChannel:
-			btcdLog.Info("Shutdown requested.  Shutting down...")
+			bclog.Info("Shutdown requested.  Shutting down...")
 
 		}
 		close(c)
 		for {
 			select {
 			case sig := <-interruptChannel:
-				btcdLog.Infof("Received signal (%s).  Already "+
+				bclog.Infof("Received signal (%s).  Already "+
 					"shutting down...", sig)
 
 			case <-shutdownRequestChannel:
-				btcdLog.Info("Shutdown requested.  Already " +
+				bclog.Info("Shutdown requested.  Already " +
 					"shutting down...")
 			}
 		}

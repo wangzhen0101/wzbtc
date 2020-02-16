@@ -24,11 +24,11 @@ func btcdMain(serverChan chan<- *server) error {
 	DumpCfg(cfg)
 
 	interrupt := interruptListener()
-	defer btcdLog.Info("Shutdown complete")
+	defer bclog.Info("Shutdown complete")
 
-	btcdLog.Infof("Version %s", version())
+	bclog.Infof("Version %s", version())
 
-	btcdLog.Info("start success.")
+	bclog.Info("start success.")
 
 	time.Sleep(time.Second * 3)
 
