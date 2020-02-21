@@ -126,10 +126,10 @@ func btcdMain(serverChan chan<- *server) error {
 		srvrLog.Infof("Server shutdown complete")
 	}()
 
-	server.Start()
-	if serverChan != nil {
-		serverChan <- server
-	}
+	//server.Start()
+	//if serverChan != nil {
+	//	serverChan <- server
+	//}
 
 	btcdLog.Info("btcd start success.")
 

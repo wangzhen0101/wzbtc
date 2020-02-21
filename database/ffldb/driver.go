@@ -1,7 +1,12 @@
+// Copyright (c) 2015-2016 The btcsuite developers
+// Use of this source code is governed by an ISC
+// license that can be found in the LICENSE file.
+
 package ffldb
 
 import (
 	"fmt"
+
 	"github.com/wangzhen0101/wzbtc/bclog"
 	"github.com/wangzhen0101/wzbtc/database"
 	"github.com/wangzhen0101/wzbtc/wire"

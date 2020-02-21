@@ -1,3 +1,7 @@
+// Copyright (c) 2013-2016 The btcsuite developers
+// Use of this source code is governed by an ISC
+// license that can be found in the LICENSE file.
+
 package database
 
 import (
@@ -15,14 +19,12 @@ func init() {
 }
 
 // DisableLog disables all library log output.  Logging output is disabled
-// by default until either UseLogger or SetLogWriter are called.
+// by default until UseLogger is called.
 func DisableLog() {
 	log = bclog.Disabled
 }
 
 // UseLogger uses a specified Logger to output package logging info.
-// This should be used in preference to SetLogWriter if the caller is also
-// using bclog.
 func UseLogger(logger bclog.Logger) {
 	log = logger
 

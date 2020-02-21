@@ -3025,6 +3025,7 @@ func initListeners(amgr *addrmgr.AddrManager, listenAddrs []string, services wir
 		// Add bound addresses to address manager to be advertised to peers.
 		for _, listener := range listeners {
 			addr := listener.Addr().String()
+			amgrLog.Infof("add local address:%s", addr)
 			err := addLocalAddress(amgr, addr, services)
 			if err != nil {
 				amgrLog.Warnf("Skipping bound address %s: %v", addr, err)

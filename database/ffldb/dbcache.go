@@ -1,14 +1,19 @@
+// Copyright (c) 2015-2016 The btcsuite developers
+// Use of this source code is governed by an ISC
+// license that can be found in the LICENSE file.
+
 package ffldb
 
 import (
 	"bytes"
 	"fmt"
+	"sync"
+	"time"
+
 	"github.com/btcsuite/goleveldb/leveldb"
 	"github.com/btcsuite/goleveldb/leveldb/iterator"
 	"github.com/btcsuite/goleveldb/leveldb/util"
 	"github.com/wangzhen0101/wzbtc/database/internal/treap"
-	"sync"
-	"time"
 )
 
 const (
@@ -64,9 +69,12 @@ func (iter *ldbCacheIter) SetReleaser(releaser util.Releaser) {
 func (iter *ldbCacheIter) Release() {
 }
 
+// newLdbCacheIter creates a new treap iterator for the given slice against the
+// pending keys for the passed cache snapshot and returns it wrapped in an
+// ldbCacheIter so it can be used as a leveldb iterator.
 func newLdbCacheIter(snap *dbCacheSnapshot, slice *util.Range) *ldbCacheIter {
 	iter := snap.pendingKeys.Iterator(slice.Start, slice.Limit)
-	return &ldbCacheIter{iter}
+	return &ldbCacheIter{Iterator: iter}
 }
 
 // dbCacheIterator defines an iterator over the key/value pairs in the database
@@ -323,14 +331,28 @@ func (snap *dbCacheSnapshot) Release() {
 	snap.pendingRemove = nil
 }
 
+// NewIterator returns a new iterator for the snapshot.  The newly returned
+// iterator is not pointing to a valid item until a call to one of the methods
+// to position it is made.
+//
+// The slice parameter allows the iterator to be limited to a range of keys.
+// The start key is inclusive and the limit key is exclusive.  Either or both
+// can be nil if the functionality is not desired.
 func (snap *dbCacheSnapshot) NewIterator(slice *util.Range) *dbCacheIterator {
 	return &dbCacheIterator{
-		cacheSnapshot: snap,
 		dbIter:        snap.dbSnapshot.NewIterator(slice, nil),
 		cacheIter:     newLdbCacheIter(snap, slice),
+		cacheSnapshot: snap,
 	}
 }
 
+// dbCache provides a database cache layer backed by an underlying database.  It
+// allows a maximum cache size and flush interval to be specified such that the
+// cache is flushed to the database when the cache size exceeds the maximum
+// configured value or it has been longer than the configured interval since the
+// last flush.  This effectively provides transaction batching so that callers
+// can commit transactions at will without incurring large performance hits due
+// to frequent disk syncs.
 type dbCache struct {
 	// ldb is the underlying leveldb DB for metadata.
 	ldb *leveldb.DB
@@ -369,6 +391,10 @@ type dbCache struct {
 	cachedRemove *treap.Immutable
 }
 
+// Snapshot returns a snapshot of the database cache and underlying database at
+// a particular point in time.
+//
+// The snapshot must be released after use by calling Release.
 func (c *dbCache) Snapshot() (*dbCacheSnapshot, error) {
 	dbSnapshot, err := c.ldb.GetSnapshot()
 	if err != nil {
@@ -376,14 +402,16 @@ func (c *dbCache) Snapshot() (*dbCacheSnapshot, error) {
 		return nil, convertErr(str, err)
 	}
 
-	c.cacheLock.Lock()
+	// Since the cached keys to be added and removed use an immutable treap,
+	// a snapshot is simply obtaining the root of the tree under the lock
+	// which is used to atomically swap the root.
+	c.cacheLock.RLock()
 	cacheSnapshot := &dbCacheSnapshot{
 		dbSnapshot:    dbSnapshot,
 		pendingKeys:   c.cachedKeys,
 		pendingRemove: c.cachedRemove,
 	}
-	c.cacheLock.Unlock()
-
+	c.cacheLock.RUnlock()
 	return cacheSnapshot, nil
 }
 
@@ -419,58 +447,74 @@ type TreapForEacher interface {
 	ForEach(func(k, v []byte) bool)
 }
 
+// commitTreaps atomically commits all of the passed pending add/update/remove
+// updates to the underlying database.
 func (c *dbCache) commitTreaps(pendingKeys, pendingRemove TreapForEacher) error {
+	// Perform all leveldb updates using an atomic transaction.
 	return c.updateDB(func(ldbTx *leveldb.Transaction) error {
 		var innerErr error
 		pendingKeys.ForEach(func(k, v []byte) bool {
 			if dbErr := ldbTx.Put(k, v, nil); dbErr != nil {
-				str := fmt.Sprintf("failed to put key %q to ldb transaction", k)
+				str := fmt.Sprintf("failed to put key %q to "+
+					"ldb transaction", k)
 				innerErr = convertErr(str, dbErr)
 				return false
 			}
 			return true
 		})
-
 		if innerErr != nil {
 			return innerErr
 		}
 
 		pendingRemove.ForEach(func(k, v []byte) bool {
 			if dbErr := ldbTx.Delete(k, nil); dbErr != nil {
-				str := fmt.Sprintf("failed to delete key %q from ldb transaction", k)
+				str := fmt.Sprintf("failed to delete "+
+					"key %q from ldb transaction",
+					k)
 				innerErr = convertErr(str, dbErr)
 				return false
 			}
 			return true
 		})
-
 		return innerErr
 	})
 }
 
+// flush flushes the database cache to persistent storage.  This involes syncing
+// the block store and replaying all transactions that have been applied to the
+// cache to the underlying database.
+//
+// This function MUST be called with the database write lock held.
 func (c *dbCache) flush() error {
 	c.lastFlush = time.Now()
 
-	// 将文件内容刷新的磁盘
+	// Sync the current write file associated with the block store.  This is
+	// necessary before writing the metadata to prevent the case where the
+	// metadata contains information about a block which actually hasn't
+	// been written yet in unexpected shutdown scenarios.
 	if err := c.store.syncBlocks(); err != nil {
 		return err
 	}
 
+	// Since the cached keys to be added and removed use an immutable treap,
+	// a snapshot is simply obtaining the root of the tree under the lock
+	// which is used to atomically swap the root.
 	c.cacheLock.RLock()
 	cachedKeys := c.cachedKeys
 	cachedRemove := c.cachedRemove
 	c.cacheLock.RUnlock()
 
+	// Nothing to do if there is no data to flush.
 	if cachedKeys.Len() == 0 && cachedRemove.Len() == 0 {
 		return nil
 	}
 
-	// 把所有缓存的内容全部提交
+	// Perform all leveldb updates using an atomic transaction.
 	if err := c.commitTreaps(cachedKeys, cachedRemove); err != nil {
 		return err
 	}
 
-	// 清空所有的缓存
+	// Clear the cache since it has been flushed.
 	c.cacheLock.Lock()
 	c.cachedKeys = treap.NewImmutable()
 	c.cachedRemove = treap.NewImmutable()
@@ -479,42 +523,79 @@ func (c *dbCache) flush() error {
 	return nil
 }
 
-//判断缓存中的内容是否需要flushed
+// needsFlush returns whether or not the database cache needs to be flushed to
+// persistent storage based on its current size, whether or not adding all of
+// the entries in the passed database transaction would cause it to exceed the
+// configured limit, and how much time has elapsed since the last time the cache
+// was flushed.
+//
+// This function MUST be called with the database write lock held.
 func (c *dbCache) needsFlush(tx *transaction) bool {
-
-	// 时间到了需要刷新
+	// A flush is needed when more time has elapsed than the configured
+	// flush interval.
 	if time.Since(c.lastFlush) > c.flushInterval {
 		return true
 	}
 
-	//时间未到，判断大小是否需要刷新
+	// A flush is needed when the size of the database cache exceeds the
+	// specified max cache size.  The total calculated size is multiplied by
+	// 1.5 here to account for additional memory consumption that will be
+	// needed during the flush as well as old nodes in the cache that are
+	// referenced by the snapshot used by the transaction.
 	snap := tx.snapshot
 	totalSize := snap.pendingKeys.Size() + snap.pendingRemove.Size()
 	totalSize = uint64(float64(totalSize) * 1.5)
 	return totalSize > c.maxSize
 }
 
+// commitTx atomically adds all of the pending keys to add and remove into the
+// database cache.  When adding the pending keys would cause the size of the
+// cache to exceed the max cache size, or the time since the last flush exceeds
+// the configured flush interval, the cache will be flushed to the underlying
+// persistent database.
+//
+// This is an atomic operation with respect to the cache in that either all of
+// the pending keys to add and remove in the transaction will be applied or none
+// of them will.
+//
+// The database cache itself might be flushed to the underlying persistent
+// database even if the transaction fails to apply, but it will only be the
+// state of the cache without the transaction applied.
+//
+// This function MUST be called during a database write transaction which in
+// turn implies the database write lock will be held.
 func (c *dbCache) commitTx(tx *transaction) error {
+	// Flush the cache and write the current transaction directly to the
+	// database if a flush is needed.
 	if c.needsFlush(tx) {
 		if err := c.flush(); err != nil {
 			return err
 		}
 
+		// Perform all leveldb updates using an atomic transaction.
 		err := c.commitTreaps(tx.pendingKeys, tx.pendingRemove)
 		if err != nil {
 			return err
 		}
 
+		// Clear the transaction entries since they have been committed.
 		tx.pendingKeys = nil
 		tx.pendingRemove = nil
 		return nil
 	}
 
+	// At this point a database flush is not needed, so atomically commit
+	// the transaction to the cache.
+
+	// Since the cached keys to be added and removed use an immutable treap,
+	// a snapshot is simply obtaining the root of the tree under the lock
+	// which is used to atomically swap the root.
 	c.cacheLock.RLock()
 	newCachedKeys := c.cachedKeys
 	newCachedRemove := c.cachedRemove
 	c.cacheLock.RUnlock()
 
+	// Apply every key to add in the database transaction to the cache.
 	tx.pendingKeys.ForEach(func(k, v []byte) bool {
 		newCachedRemove = newCachedRemove.Delete(k)
 		newCachedKeys = newCachedKeys.Put(k, v)
@@ -522,6 +603,7 @@ func (c *dbCache) commitTx(tx *transaction) error {
 	})
 	tx.pendingKeys = nil
 
+	// Apply every key to remove in the database transaction to the cache.
 	tx.pendingRemove.ForEach(func(k, v []byte) bool {
 		newCachedKeys = newCachedKeys.Delete(k)
 		newCachedRemove = newCachedRemove.Put(k, nil)
@@ -529,11 +611,12 @@ func (c *dbCache) commitTx(tx *transaction) error {
 	})
 	tx.pendingRemove = nil
 
+	// Atomically replace the immutable treaps which hold the cached keys to
+	// add and delete.
 	c.cacheLock.Lock()
 	c.cachedKeys = newCachedKeys
 	c.cachedRemove = newCachedRemove
 	c.cacheLock.Unlock()
-
 	return nil
 }
 
