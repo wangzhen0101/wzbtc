@@ -583,7 +583,7 @@ func dropIndex(db database.DB, idxKey []byte, idxName string, interrupt <-chan s
 	// Since the indexes can be so large, attempting to simply delete
 	// the bucket in a single database transaction would result in massive
 	// memory usage and likely crash many systems due to ulimits.  In order
-	// to avoid this, use a cursor to delete a maximum number of entries out
+	// to avoid this, use a bclog to delete a maximum number of entries out
 	// of the bucket at a time. Recurse buckets depth-first to delete any
 	// sub-buckets.
 	const maxDeletions = 2000000

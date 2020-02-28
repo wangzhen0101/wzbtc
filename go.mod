@@ -3,6 +3,7 @@ module github.com/wangzhen0101/wzbtc
 go 1.13
 
 require (
+	github.com/axw/gocov v1.0.0 // indirect
 	github.com/btcsuite/go-socks v0.0.0-20170105172521-4720035b7bfd
 	github.com/btcsuite/goleveldb v1.0.0
 	github.com/btcsuite/websocket v0.0.0-20150119174127-31079b680792

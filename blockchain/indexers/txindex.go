@@ -294,6 +294,7 @@ var _ Indexer = (*TxIndex)(nil)
 // disconnecting blocks.
 //
 // This is part of the Indexer interface.
+// 获取已知的index中保存的block id
 func (idx *TxIndex) Init() error {
 	// Find the latest known block id field for the internal block id
 	// index and initialize it.  This is done because it's a lot more

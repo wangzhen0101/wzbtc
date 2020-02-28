@@ -23,7 +23,7 @@ import (
 // the write-end pipe of an initialized log rotator.
 type logWriter struct{}
 
-func (logWriter) Write(p []byte) (n int, err error) {
+func (l logWriter) Write(p []byte) (n int, err error) {
 	os.Stdout.Write(p)
 	logRotator.Write(p)
 	return len(p), nil

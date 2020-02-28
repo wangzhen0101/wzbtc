@@ -6,6 +6,7 @@ package wire
 
 import (
 	"encoding/binary"
+	"fmt"
 	"io"
 	"net"
 	"time"
@@ -55,6 +56,10 @@ func (na *NetAddress) HasService(service ServiceFlag) bool {
 // message.
 func (na *NetAddress) AddService(service ServiceFlag) {
 	na.Services |= service
+}
+
+func (na *NetAddress) String() string {
+	return fmt.Sprintf("IP:%s,Port:%d,Services:%d, Time:%s", na.IP, na.Port, na.Services, na.Timestamp.Format(time.RFC3339))
 }
 
 // NewNetAddressIPPort returns a new NetAddress using the provided IP, port, and

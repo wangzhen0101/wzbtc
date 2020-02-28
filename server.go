@@ -45,7 +45,7 @@ const (
 	defaultRequiredServices = wire.SFNodeNetwork
 
 	// defaultTargetOutbound is the default number of outbound peers to target.
-	defaultTargetOutbound = 8
+	defaultTargetOutbound = 1
 
 	// connectionRetryInterval is the base amount of time to wait in between
 	// retries when connecting to persistent peers.  It is adjusted by the
@@ -2153,6 +2153,7 @@ func (s *server) peerHandler() {
 				s.addrManager.AddAddresses(addrs, addrs[0])
 			})
 	}
+
 	go s.connManager.Start()
 
 out:
@@ -2899,6 +2900,7 @@ func newServer(listenAddrs, agentBlacklist, agentWhitelist []string,
 	s.connManager = cmgr
 
 	// Start up persistent peers.
+	// 默认配置没有持久的长连接
 	permanentPeers := cfg.ConnectPeers
 	if len(permanentPeers) == 0 {
 		permanentPeers = cfg.AddPeers

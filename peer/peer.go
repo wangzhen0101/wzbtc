@@ -6,7 +6,6 @@
 package peer
 
 import (
-	"bytes"
 	"container/list"
 	"errors"
 	"fmt"
@@ -1030,9 +1029,9 @@ func (p *Peer) readMessage(encoding wire.MessageEncoding) (wire.Message, []byte,
 	log.Tracef("%v", newLogClosure(func() string {
 		return spew.Sdump(msg)
 	}))
-	log.Tracef("%v", newLogClosure(func() string {
-		return spew.Sdump(buf)
-	}))
+	//log.Tracef("%v", newLogClosure(func() string {
+	//	return spew.Sdump(buf)
+	//}))
 
 	return msg, buf, nil
 }
@@ -1058,15 +1057,15 @@ func (p *Peer) writeMessage(msg wire.Message, enc wire.MessageEncoding) error {
 	log.Tracef("%v", newLogClosure(func() string {
 		return spew.Sdump(msg)
 	}))
-	log.Tracef("%v", newLogClosure(func() string {
-		var buf bytes.Buffer
-		_, err := wire.WriteMessageWithEncodingN(&buf, msg, p.ProtocolVersion(),
-			p.cfg.ChainParams.Net, enc)
-		if err != nil {
-			return err.Error()
-		}
-		return spew.Sdump(buf.Bytes())
-	}))
+	//log.Tracef("%v", newLogClosure(func() string {
+	//	var buf bytes.Buffer
+	//	_, err := wire.WriteMessageWithEncodingN(&buf, msg, p.ProtocolVersion(),
+	//		p.cfg.ChainParams.Net, enc)
+	//	if err != nil {
+	//		return err.Error()
+	//	}
+	//	return spew.Sdump(buf.Bytes())
+	//}))
 
 	// Write the message to the peer.
 	n, err := wire.WriteMessageWithEncodingN(p.conn, msg,

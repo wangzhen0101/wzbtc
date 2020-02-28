@@ -527,6 +527,9 @@ func (cm *ConnManager) Start() {
 	}
 
 	for i := atomic.LoadUint64(&cm.connReqCount); i < uint64(cm.cfg.TargetOutbound); i++ {
+		log.Infof("%d-%d-%d", atomic.LoadUint64(&cm.connReqCount),
+			uint64(cm.cfg.TargetOutbound),
+			i)
 		go cm.NewConnReq()
 	}
 }

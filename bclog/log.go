@@ -214,7 +214,7 @@ func (b *Backend) printf(lvl, tag string, format string, args ...interface{}) {
 }
 
 func (b *Backend) Logger(subsystemTag string) Logger {
-	return &slog{LevelInfo, subsystemTag, b}
+	return &slog{LevelDebug, subsystemTag, b}
 }
 
 type slog struct {

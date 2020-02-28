@@ -5,6 +5,7 @@
 package addrmgr
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/wangzhen0101/wzbtc/wire"
@@ -99,4 +100,17 @@ func (ka *KnownAddress) isBad() bool {
 	}
 
 	return false
+}
+
+func (ka *KnownAddress) String() string {
+
+	return fmt.Sprintf(
+		"na:%s\nsrcAddr:%s\n,attemtps:%d\nlastattempt:%s\n,lastsuccess:%s\n,tried:%t\n,refs:%d\n",
+		ka.na,
+		ka.srcAddr,
+		ka.attempts,
+		ka.lastattempt.Format(time.RFC3339),
+		ka.lastsuccess.Format(time.RFC3339),
+		ka.tried,
+		ka.refs)
 }

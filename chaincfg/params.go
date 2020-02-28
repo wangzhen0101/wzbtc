@@ -701,6 +701,7 @@ func newHashFromStr(hexStr string) *chainhash.Hash {
 		panic(err)
 	}
 	return hash
+
 }
 
 func init() {

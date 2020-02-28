@@ -102,7 +102,7 @@ const (
 
 	// dumpAddressInterval is the interval used to dump the address
 	// cache to disk for future use.
-	dumpAddressInterval = time.Minute * 10
+	dumpAddressInterval = time.Minute * 1
 
 	// triedBucketSize is the maximum number of addresses in each
 	// tried address bucket.
@@ -590,6 +590,12 @@ func (a *AddrManager) Stop() error {
 
 	log.Infof("Address manager shutting down")
 	close(a.quit)
+	a.wg.Wait()
+	return nil
+}
+
+func (a *AddrManager) Wait() error {
+	log.Infof("Wait AddrManager ...")
 	a.wg.Wait()
 	return nil
 }
